@@ -6,10 +6,13 @@
 #include "GameFramework/Character.h"
 #include "TopDownShooterCharacter.generated.h"
 
+class UInputAction;
+struct FInputActionValue;
+
 /**
  *  A controllable top-down perspective character
  */
-UCLASS(abstract)
+UCLASS()
 class ATopDownShooterCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -23,6 +26,9 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* MoveAction;
 
 public:
 
@@ -40,6 +46,14 @@ public:
 
 	/** Returns the Camera Boom component **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	/** Adds input bindings */
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+
+	/** Handles WASD movement input */
+	void Move(const FInputActionValue& Value);
 
 };
 

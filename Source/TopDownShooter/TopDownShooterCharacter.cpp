@@ -10,6 +10,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
 {
@@ -32,9 +34,11 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->TargetArmLength = 800.f;
-	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
+	CameraBoom->TargetArmLength = 1400.f;
+	CameraBoom->SetRelativeRotation(FRotator(-50.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 3.f;
 
 	// Create the camera component
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
@@ -59,4 +63,22 @@ void ATopDownShooterCharacter::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 
 	// stub
+}
+
+void ATopDownShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATopDownShooterCharacter::Move);
+	}
+}
+
+void ATopDownShooterCharacter::Move(const FInputActionValue& Value)
+{
+	const FVector2D MoveInput = Value.Get<FVector2D>();
+
+	AddMovementInput(FVector::ForwardVector, MoveInput.Y);
+	AddMovementInput(FVector::RightVector, MoveInput.X);
 }
