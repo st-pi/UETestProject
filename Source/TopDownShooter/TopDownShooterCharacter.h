@@ -7,6 +7,7 @@
 #include "TopDownShooterCharacter.generated.h"
 
 class UInputAction;
+class ATopDownShooterProjectile;
 struct FInputActionValue;
 
 /**
@@ -30,6 +31,20 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ShootAction;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<ATopDownShooterProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	FVector ProjectileSpawnOffset = FVector(0.0, 0.0, 0.0);
+
+	UPROPERTY(EditAnywhere, Category = "Weapon", meta = (ClampMin = 0.01, Units = "s"))
+	float FireRate = 0.15f;
+
+	FTimerHandle FireTimer;
+
 public:
 
 	/** Constructor */
@@ -37,6 +52,8 @@ public:
 
 	/** Initialization */
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	/** Update */
 	virtual void Tick(float DeltaSeconds) override;
@@ -50,10 +67,14 @@ public:
 	/** Adds input bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-protected:
+private:
 
 	/** Handles WASD movement input */
 	void Move(const FInputActionValue& Value);
+
+	void StartFire();
+	void StopFire();
+	void Fire();
 
 };
 
