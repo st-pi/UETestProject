@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "TopDownShooterEnemy.h"
 
 ATopDownShooterProjectile::ATopDownShooterProjectile()
 {
@@ -48,7 +49,10 @@ void ATopDownShooterProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AAc
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	//add NPC hit
+	if (ATopDownShooterEnemy* Enemy = Cast<ATopDownShooterEnemy>(Other))
+	{
+		Enemy->Destroy();
+	}
 }
 
 void ATopDownShooterProjectile::OnProjectileStop(const FHitResult& ImpactResult)
