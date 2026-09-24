@@ -22,6 +22,9 @@ class ATopDownShooterProjectile : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
 
+	UPROPERTY(EditAnywhere, Category = "Damage", meta = (ClampMin = 0))
+	float Damage = 25.f;
+
 public:
 	ATopDownShooterProjectile();
 

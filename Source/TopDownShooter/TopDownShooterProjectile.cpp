@@ -5,7 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "TopDownShooterEnemy.h"
+#include "Kismet/GameplayStatics.h"
 
 ATopDownShooterProjectile::ATopDownShooterProjectile()
 {
@@ -49,9 +49,9 @@ void ATopDownShooterProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AAc
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (ATopDownShooterEnemy* Enemy = Cast<ATopDownShooterEnemy>(Other))
+	if (Other && Other != GetOwner())
 	{
-		Enemy->Destroy();
+		UGameplayStatics::ApplyDamage(Other, Damage, GetInstigatorController(), this, nullptr);
 	}
 }
 

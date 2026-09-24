@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TopDownShooterEnemy.h"
+#include "TopDownShooterHealthComponent.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -21,6 +22,8 @@ ATopDownShooterEnemy::ATopDownShooterEnemy()
 
 	// collision is handled by the capsule, the mesh is visual only
 	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
+
+	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -49,6 +52,20 @@ void ATopDownShooterEnemy::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	GetWorldTimerManager().ClearTimer(ChaseTimer);
+}
+
+float ATopDownShooterEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	HealthComponent->ApplyDamage(ActualDamage);
+
+	if (HealthComponent->IsDead())
+	{
+		Destroy();
+	}
+
+	return ActualDamage;
 }
 
 void ATopDownShooterEnemy::UpdateChase()
