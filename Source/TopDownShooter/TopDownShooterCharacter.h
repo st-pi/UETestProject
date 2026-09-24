@@ -8,6 +8,7 @@
 
 class UInputAction;
 class ATopDownShooterProjectile;
+class UTopDownShooterHealthComponent;
 struct FInputActionValue;
 
 /**
@@ -27,6 +28,9 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UTopDownShooterHealthComponent* HealthComponent;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
@@ -66,6 +70,8 @@ public:
 
 	/** Adds input bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 private:
 

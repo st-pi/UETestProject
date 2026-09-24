@@ -13,6 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "TopDownShooterProjectile.h"
+#include "TopDownShooterHealthComponent.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
 {
@@ -28,6 +29,8 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
+	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
 
 	// Create the camera boom component
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -95,6 +98,19 @@ void ATopDownShooterCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATopDownShooterCharacter::StartFire);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ATopDownShooterCharacter::StopFire);
 	}
+}
+
+float ATopDownShooterCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	HealthComponent->ApplyDamage(ActualDamage);
+
+	if (HealthComponent->IsDead())
+	{
+		// gameover
+	}
+
+	return ActualDamage;
 }
 
 void ATopDownShooterCharacter::Move(const FInputActionValue& Value)

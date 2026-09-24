@@ -11,6 +11,8 @@ void UTopDownShooterHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CurrentHealth = MaxHealth;
+
+	OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);
 }
 
 float UTopDownShooterHealthComponent::ApplyDamage(float Damage)
@@ -27,6 +29,8 @@ float UTopDownShooterHealthComponent::ApplyDamage(float Damage)
 
 	UE_LOG(LogTopDownShooter, Log, TEXT("%s took %.1f damage, health %.1f -> %.1f%s"),
 		*GetNameSafe(GetOwner()), TakenDamage, PreviousHealth, CurrentHealth, IsDead() ? TEXT(" (dead)") : TEXT(""));
+
+	OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);
 
 	return TakenDamage;
 }
