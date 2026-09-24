@@ -16,9 +16,6 @@ public class TopDownShooter : ModuleRules
 			"EnhancedInput",
 			"AIModule",
 			"NavigationSystem",
-			"StateTreeModule",
-			"GameplayStateTreeModule",
-			"Niagara",
 			"UMG",
 			"Slate"
 		});
@@ -26,13 +23,7 @@ public class TopDownShooter : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
-			"TopDownShooter",
-			"TopDownShooter/Variant_Strategy",
-			"TopDownShooter/Variant_Strategy/UI",
-			"TopDownShooter/Variant_TwinStick",
-			"TopDownShooter/Variant_TwinStick/AI",
-			"TopDownShooter/Variant_TwinStick/Gameplay",
-			"TopDownShooter/Variant_TwinStick/UI"
+			"TopDownShooter"
 		});
 
 		// Uncomment if you are using Slate UI
