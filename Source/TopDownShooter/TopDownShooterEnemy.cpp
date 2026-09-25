@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -14,16 +15,20 @@ ATopDownShooterEnemy::ATopDownShooterEnemy()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	// spawn an AI controller both for enemies placed in the level and for spawned ones
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.f);
-	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 
-	// collision is handled by the capsule, the mesh is visual only
 	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
 
 	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
+
+	DamageSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DamageSphere"));
+
+	DamageSphere->SetupAttachment(RootComponent);
+	DamageSphere->SetSphereRadius(60.f);
+	DamageSphere->SetCollisionProfileName(TEXT("EnemyDamage"));
+	DamageSphere->OnComponentBeginOverlap.AddDynamic(this, &ATopDownShooterEnemy::HandleDamageOverlap);
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -66,6 +71,13 @@ float ATopDownShooterEnemy::TakeDamage(float Damage, FDamageEvent const& DamageE
 	}
 
 	return ActualDamage;
+}
+
+void ATopDownShooterEnemy::HandleDamageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UGameplayStatics::ApplyDamage(OtherActor, ContactDamage, GetController(), this, nullptr);
+
+	Destroy();
 }
 
 void ATopDownShooterEnemy::UpdateChase()

@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TopDownShooterPlayerController.h"
-#include "TopDownShooterHUD.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 
@@ -25,15 +24,5 @@ void ATopDownShooterPlayerController::SetupInputComponent()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}
-}
-
-void ATopDownShooterPlayerController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	if (ATopDownShooterHUD* TopDownHUD = GetHUD<ATopDownShooterHUD>())
-	{
-		TopDownHUD->BindToPawn(InPawn);
 	}
 }

@@ -57,6 +57,5 @@ void ATopDownShooterProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AAc
 
 void ATopDownShooterProjectile::OnProjectileStop(const FHitResult& ImpactResult)
 {
-	// destroy this actor immediately
 	Destroy();
 }

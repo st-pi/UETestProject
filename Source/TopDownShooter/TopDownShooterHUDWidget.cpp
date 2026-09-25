@@ -10,7 +10,7 @@ void UTopDownShooterHUDWidget::SetHealthComponent(UTopDownShooterHealthComponent
 		return;
 	}
 
-	HealthComponent->OnHealthChanged.AddDynamic(this, &UTopDownShooterHUDWidget::HandleHealthChanged);
+	HealthComponent->OnHealthChanged.AddUniqueDynamic(this, &UTopDownShooterHUDWidget::HandleHealthChanged);
 
 	HandleHealthChanged(HealthComponent->GetCurrentHealth(), HealthComponent->GetMaxHealth());
 }

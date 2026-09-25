@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -31,6 +32,12 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
 	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
+
+	Hurtbox = CreateDefaultSubobject<USphereComponent>(TEXT("Hurtbox"));
+
+	Hurtbox->SetupAttachment(RootComponent);
+	Hurtbox->SetSphereRadius(50.f);
+	Hurtbox->SetCollisionProfileName(TEXT("PlayerHitbox"));
 
 	// Create the camera boom component
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));

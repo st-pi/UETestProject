@@ -23,7 +23,10 @@ public:
 
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	/** Points the HUD at the health of the pawn the owning controller took over */
+private:
+	UFUNCTION()
+	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
 	void BindToPawn(APawn* Pawn);
 
 };

@@ -7,6 +7,7 @@
 #include "TopDownShooterCharacter.generated.h"
 
 class UInputAction;
+class USphereComponent;
 class ATopDownShooterProjectile;
 class UTopDownShooterHealthComponent;
 struct FInputActionValue;
@@ -31,6 +32,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UTopDownShooterHealthComponent* HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USphereComponent* Hurtbox;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
@@ -75,7 +79,6 @@ public:
 
 private:
 
-	/** Handles WASD movement input */
 	void Move(const FInputActionValue& Value);
 
 	void StartFire();

@@ -29,8 +29,6 @@ public:
 protected:
 	/** Initialize input bindings */
 	virtual void SetupInputComponent() override;
-
-	virtual void OnPossess(APawn* InPawn) override;
 };
 
 
