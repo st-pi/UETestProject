@@ -2,14 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "TopDownShooterHUDWidget.generated.h"
+#include "TopDownShooterHealthWidget.generated.h"
 
 class UProgressBar;
 class UTextBlock;
 class UTopDownShooterHealthComponent;
 
 UCLASS(abstract)
-class UTopDownShooterHUDWidget : public UUserWidget
+class UTopDownShooterHealthWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -17,8 +17,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HealthBar;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidgetOptional))
 	UTextBlock* HealthText;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	bool bHideWhenFull = false;
 
 public:
 	void SetHealthComponent(UTopDownShooterHealthComponent* HealthComponent);

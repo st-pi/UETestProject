@@ -2,6 +2,8 @@
 
 #include "TopDownShooterEnemy.h"
 #include "TopDownShooterHealthComponent.h"
+#include "TopDownShooterHealthWidget.h"
+#include "Components/WidgetComponent.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -30,6 +32,14 @@ ATopDownShooterEnemy::ATopDownShooterEnemy()
 	DamageSphere->SetCollisionProfileName(TEXT("EnemyDamage"));
 	DamageSphere->OnComponentBeginOverlap.AddDynamic(this, &ATopDownShooterEnemy::HandleDamageOverlap);
 
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
+
+	HealthBarWidget->SetupAttachment(RootComponent);
+	HealthBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + 30.f));
+	HealthBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	HealthBarWidget->SetDrawSize(FVector2D(100.f, 10.f));
+	HealthBarWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -50,6 +60,11 @@ void ATopDownShooterEnemy::BeginPlay()
 	GetWorldTimerManager().SetTimer(ChaseTimer, this, &ATopDownShooterEnemy::UpdateChase, ChaseUpdateRate, true);
 
 	UpdateChase();
+
+	if (UTopDownShooterHealthWidget* HealthWidget = Cast<UTopDownShooterHealthWidget>(HealthBarWidget->GetUserWidgetObject()))
+	{
+		HealthWidget->SetHealthComponent(HealthComponent);
+	}
 }
 
 void ATopDownShooterEnemy::EndPlay(EEndPlayReason::Type EndPlayReason)

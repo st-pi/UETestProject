@@ -23,7 +23,8 @@ public class TopDownShooter : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
-			"TopDownShooter"
+			"TopDownShooter",
+			"TopDownShooter/UI"
 		});
 
 		// Uncomment if you are using Slate UI

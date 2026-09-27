@@ -1,5 +1,5 @@
 #include "TopDownShooterHUD.h"
-#include "TopDownShooterHUDWidget.h"
+#include "TopDownShooterHealthWidget.h"
 #include "TopDownShooterHealthComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Pawn.h"
@@ -15,7 +15,7 @@ void ATopDownShooterHUD::BeginPlay()
 		return;
 	}
 
-	HUDWidget = CreateWidget<UTopDownShooterHUDWidget>(PlayerController, HUDWidgetClass);
+	HUDWidget = CreateWidget<UTopDownShooterHealthWidget>(PlayerController, HUDWidgetClass);
 	if (!HUDWidget)
 	{
 		return;

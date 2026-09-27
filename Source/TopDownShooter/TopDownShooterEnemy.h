@@ -5,6 +5,7 @@
 #include "TopDownShooterEnemy.generated.h"
 
 class USphereComponent;
+class UWidgetComponent;
 class UTopDownShooterHealthComponent;
 
 UCLASS()
@@ -18,6 +19,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* DamageSphere;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UWidgetComponent* HealthBarWidget;
 
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (ClampMin = 0.05, ClampMax = 5, Units = "s"))
 	float ChaseUpdateRate = 0.3f;

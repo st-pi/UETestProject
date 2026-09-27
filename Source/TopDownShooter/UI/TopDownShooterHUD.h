@@ -4,7 +4,7 @@
 #include "GameFramework/HUD.h"
 #include "TopDownShooterHUD.generated.h"
 
-class UTopDownShooterHUDWidget;
+class UTopDownShooterHealthWidget;
 
 UCLASS()
 class ATopDownShooterHUD : public AHUD
@@ -13,10 +13,10 @@ class ATopDownShooterHUD : public AHUD
 
 private:
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UTopDownShooterHUDWidget> HUDWidgetClass;
+	TSubclassOf<UTopDownShooterHealthWidget> HUDWidgetClass;
 
 	UPROPERTY()
-	UTopDownShooterHUDWidget* HUDWidget;
+	UTopDownShooterHealthWidget* HUDWidget;
 
 public:
 	virtual void BeginPlay() override;
