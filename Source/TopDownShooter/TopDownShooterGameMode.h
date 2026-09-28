@@ -19,6 +19,10 @@ public:
 
 	/** Constructor */
 	ATopDownShooterGameMode();
+
+	void EndGame();
+
+	void RestartGame();
 };
 
 

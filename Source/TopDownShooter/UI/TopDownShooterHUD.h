@@ -6,6 +6,7 @@
 
 class UTopDownShooterHealthWidget;
 class UTopDownShooterScoreWidget;
+class UTopDownShooterGameOverWidget;
 
 UCLASS()
 class ATopDownShooterHUD : public AHUD
@@ -22,8 +23,14 @@ private:
 	UPROPERTY()
 	UTopDownShooterHealthWidget* HUDWidget;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UTopDownShooterGameOverWidget> GameOverWidgetClass;
+
 	UPROPERTY()
 	UTopDownShooterScoreWidget* ScoreWidget;
+
+	UPROPERTY()
+	UTopDownShooterGameOverWidget* GameOverWidget;
 
 public:
 	virtual void BeginPlay() override;
@@ -33,6 +40,12 @@ public:
 private:
 	UFUNCTION()
 	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
+	UFUNCTION()
+	void HandleGameOver();
+
+	UFUNCTION()
+	void HandleRestartRequested();
 
 	void BindToPawn(APawn* Pawn);
 

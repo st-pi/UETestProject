@@ -15,6 +15,7 @@
 #include "InputActionValue.h"
 #include "TopDownShooterProjectile.h"
 #include "TopDownShooterHealthComponent.h"
+#include "TopDownShooterGameMode.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
 {
@@ -114,7 +115,10 @@ float ATopDownShooterCharacter::TakeDamage(float Damage, FDamageEvent const& Dam
 
 	if (HealthComponent->IsDead())
 	{
-		// gameover
+		if (ATopDownShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<ATopDownShooterGameMode>())
+		{
+			GameMode->EndGame();
+		}
 	}
 
 	return ActualDamage;
