@@ -6,6 +6,9 @@
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -35,14 +38,16 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
 
 	Hurtbox = CreateDefaultSubobject<USphereComponent>(TEXT("Hurtbox"));
-
 	Hurtbox->SetupAttachment(RootComponent);
 	Hurtbox->SetSphereRadius(50.f);
 	Hurtbox->SetCollisionProfileName(TEXT("PlayerHitbox"));
 
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
+	WeaponMesh->SetCollisionProfileName(TEXT("NoCollision"));
+
 	// Create the camera boom component
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->TargetArmLength = 1400.f;
@@ -53,7 +58,6 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 
 	// Create the camera component
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false;
 
@@ -151,7 +155,7 @@ void ATopDownShooterCharacter::Fire()
 	}
 
 	const FRotator SpawnRotation = GetActorRotation();
-	const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(ProjectileSpawnOffset);
+	const FVector SpawnLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
@@ -159,4 +163,14 @@ void ATopDownShooterCharacter::Fire()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<ATopDownShooterProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+	if (!FireMontage)
+	{
+		return;
+	}
+
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(FireMontage);
+	}
 }

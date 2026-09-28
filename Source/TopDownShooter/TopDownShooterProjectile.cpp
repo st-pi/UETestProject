@@ -15,11 +15,11 @@ ATopDownShooterProjectile::ATopDownShooterProjectile()
 
 	RootComponent = CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
 
-	CollisionSphere->SetSphereRadius(35.0f);
-	CollisionSphere->SetNotifyRigidBodyCollision(true);
+	CollisionSphere->SetSphereRadius(12.0f);
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Block);
+	CollisionSphere->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
@@ -39,20 +39,21 @@ void ATopDownShooterProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AActor* ProjectileOwner = GetOwner())
-	{
-		CollisionSphere->IgnoreActorWhenMoving(ProjectileOwner, true);
-	}
+	CollisionSphere->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
-void ATopDownShooterProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+void ATopDownShooterProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (Other && Other != GetOwner())
+	if (bHit || !Other || Other == GetInstigator())
 	{
-		UGameplayStatics::ApplyDamage(Other, Damage, GetInstigatorController(), this, nullptr);
+		return;
 	}
+
+	bHit = true;
+
+	UGameplayStatics::ApplyDamage(Other, Damage, GetInstigatorController(), this, nullptr);
 }
 
 void ATopDownShooterProjectile::OnProjectileStop(const FHitResult& ImpactResult)

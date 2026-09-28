@@ -12,7 +12,7 @@ UCLASS(abstract)
 class ATopDownShooterProjectile : public AActor
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* CollisionSphere;
 
@@ -25,14 +25,17 @@ class ATopDownShooterProjectile : public AActor
 	UPROPERTY(EditAnywhere, Category = "Damage", meta = (ClampMin = 0))
 	float Damage = 25.f;
 
+	bool bHit = false;
+
 public:
 	ATopDownShooterProjectile();
 
-	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 protected:
 	virtual void BeginPlay() override;
 
+private:
 	UFUNCTION()
 	void OnProjectileStop(const FHitResult& ImpactResult);
 

@@ -8,6 +8,8 @@
 
 class UInputAction;
 class USphereComponent;
+class UStaticMeshComponent;
+class UAnimMontage;
 class ATopDownShooterProjectile;
 class UTopDownShooterHealthComponent;
 struct FInputActionValue;
@@ -36,6 +38,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* Hurtbox;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* WeaponMesh;
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 
@@ -46,7 +51,10 @@ private:
 	TSubclassOf<ATopDownShooterProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	FVector ProjectileSpawnOffset = FVector(0.0, 0.0, 0.0);
+	FName MuzzleSocketName = TEXT("Muzzle");
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UAnimMontage* FireMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon", meta = (ClampMin = 0.01, Units = "s"))
 	float FireRate = 0.15f;
