@@ -23,10 +23,20 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	bool bHideWhenFull = false;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	bool bBindToOwningPawn = false;
+
 public:
+	virtual void NativeConstruct() override;
+
 	void SetHealthComponent(UTopDownShooterHealthComponent* HealthComponent);
 
 private:
+	UFUNCTION()
+	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
+	void BindToPawn(APawn* Pawn);
+
 	UFUNCTION()
 	void HandleHealthChanged(float CurrentHealth, float MaxHealth);
 

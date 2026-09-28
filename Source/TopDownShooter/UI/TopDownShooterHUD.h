@@ -4,8 +4,7 @@
 #include "GameFramework/HUD.h"
 #include "TopDownShooterHUD.generated.h"
 
-class UTopDownShooterHealthWidget;
-class UTopDownShooterScoreWidget;
+class UUserWidget;
 class UTopDownShooterGameOverWidget;
 
 UCLASS()
@@ -15,19 +14,13 @@ class ATopDownShooterHUD : public AHUD
 
 private:
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UTopDownShooterHealthWidget> HUDWidgetClass;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UTopDownShooterScoreWidget> ScoreWidgetClass;
-
-	UPROPERTY()
-	UTopDownShooterHealthWidget* HUDWidget;
+	TSubclassOf<UUserWidget> HUDWidgetClass;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UTopDownShooterGameOverWidget> GameOverWidgetClass;
 
 	UPROPERTY()
-	UTopDownShooterScoreWidget* ScoreWidget;
+	UUserWidget* HUDWidget;
 
 	UPROPERTY()
 	UTopDownShooterGameOverWidget* GameOverWidget;
@@ -39,14 +32,9 @@ public:
 
 private:
 	UFUNCTION()
-	void HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
-
-	UFUNCTION()
 	void HandleGameOver();
 
 	UFUNCTION()
 	void HandleRestartRequested();
-
-	void BindToPawn(APawn* Pawn);
 
 };

@@ -1,9 +1,13 @@
 #include "TopDownShooterScoreWidget.h"
 #include "TopDownShooterGameState.h"
 #include "Components/TextBlock.h"
+#include "Engine/World.h"
 
-void UTopDownShooterScoreWidget::SetGameState(ATopDownShooterGameState* GameState)
+void UTopDownShooterScoreWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+
+	ATopDownShooterGameState* GameState = GetWorld()->GetGameState<ATopDownShooterGameState>();
 	if (!GameState)
 	{
 		return;

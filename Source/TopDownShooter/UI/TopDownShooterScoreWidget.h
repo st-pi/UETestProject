@@ -5,7 +5,6 @@
 #include "TopDownShooterScoreWidget.generated.h"
 
 class UTextBlock;
-class ATopDownShooterGameState;
 
 UCLASS(abstract)
 class UTopDownShooterScoreWidget : public UUserWidget
@@ -17,7 +16,7 @@ private:
 	UTextBlock* ScoreTextValue;
 
 public:
-	void SetGameState(ATopDownShooterGameState* GameState);
+	virtual void NativeConstruct() override;
 
 private:
 	UFUNCTION()

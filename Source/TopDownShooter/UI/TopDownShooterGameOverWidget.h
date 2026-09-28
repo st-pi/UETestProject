@@ -28,8 +28,6 @@ private:
 public:
 	virtual void NativeConstruct() override;
 
-	void SetFinalScore(int32 FinalScore);
-
 private:
 	UFUNCTION()
 	void HandleRestartClicked();
