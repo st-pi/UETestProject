@@ -4,10 +4,12 @@
 #include "TopDownShooterCharacter.h"
 #include "TopDownShooterPlayerController.h"
 #include "TopDownShooterHUD.h"
+#include "TopDownShooterGameState.h"
 
 ATopDownShooterGameMode::ATopDownShooterGameMode()
 {
 	DefaultPawnClass = ATopDownShooterCharacter::StaticClass();
 	PlayerControllerClass = ATopDownShooterPlayerController::StaticClass();
 	HUDClass = ATopDownShooterHUD::StaticClass();
+	GameStateClass = ATopDownShooterGameState::StaticClass();
 }

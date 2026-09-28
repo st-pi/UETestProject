@@ -3,6 +3,7 @@
 #include "TopDownShooterEnemy.h"
 #include "TopDownShooterHealthComponent.h"
 #include "TopDownShooterHealthWidget.h"
+#include "TopDownShooterGameState.h"
 #include "Components/WidgetComponent.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
@@ -82,6 +83,11 @@ float ATopDownShooterEnemy::TakeDamage(float Damage, FDamageEvent const& DamageE
 
 	if (HealthComponent->IsDead())
 	{
+		if (ATopDownShooterGameState* GameState = GetWorld()->GetGameState<ATopDownShooterGameState>())
+		{
+			GameState->AddScore(ScoreValue);
+		}
+
 		Destroy();
 	}
 

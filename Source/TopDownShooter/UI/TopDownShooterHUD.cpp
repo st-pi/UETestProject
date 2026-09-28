@@ -1,6 +1,8 @@
 #include "TopDownShooterHUD.h"
 #include "TopDownShooterHealthWidget.h"
+#include "TopDownShooterScoreWidget.h"
 #include "TopDownShooterHealthComponent.h"
+#include "TopDownShooterGameState.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
@@ -10,22 +12,31 @@ void ATopDownShooterHUD::BeginPlay()
 	Super::BeginPlay();
 
 	APlayerController* PlayerController = GetOwningPlayerController();
-	if (!HUDWidgetClass || !PlayerController)
+	if (!PlayerController)
 	{
 		return;
 	}
 
-	HUDWidget = CreateWidget<UTopDownShooterHealthWidget>(PlayerController, HUDWidgetClass);
-	if (!HUDWidget)
+	if (ScoreWidgetClass)
 	{
-		return;
+		ScoreWidget = CreateWidget<UTopDownShooterScoreWidget>(PlayerController, ScoreWidgetClass);
+		if (ScoreWidget)
+		{
+			ScoreWidget->AddToViewport();
+			ScoreWidget->SetGameState(GetWorld()->GetGameState<ATopDownShooterGameState>());
+		}
 	}
 
-	HUDWidget->AddToViewport();
-
-	PlayerController->OnPossessedPawnChanged.AddUniqueDynamic(this, &ATopDownShooterHUD::HandlePossessedPawnChanged);
-
-	BindToPawn(PlayerController->GetPawn());
+	if (HUDWidgetClass)
+	{
+		HUDWidget = CreateWidget<UTopDownShooterHealthWidget>(PlayerController, HUDWidgetClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToViewport();
+			PlayerController->OnPossessedPawnChanged.AddUniqueDynamic(this, &ATopDownShooterHUD::HandlePossessedPawnChanged);
+			BindToPawn(PlayerController->GetPawn());
+		}
+	}
 }
 
 void ATopDownShooterHUD::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -36,6 +47,12 @@ void ATopDownShooterHUD::EndPlay(EEndPlayReason::Type EndPlayReason)
 	{
 		HUDWidget->RemoveFromParent();
 		HUDWidget = nullptr;
+	}
+
+	if (ScoreWidget)
+	{
+		ScoreWidget->RemoveFromParent();
+		ScoreWidget = nullptr;
 	}
 }
 

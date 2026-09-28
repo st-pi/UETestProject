@@ -32,6 +32,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Damage", meta = (ClampMin = 0))
 	float ContactDamage = 25.f;
 
+	UPROPERTY(EditAnywhere, Category = "Score", meta = (ClampMin = 0))
+	int32 ScoreValue = 10;
+
 	FTimerHandle ChaseTimer;
 
 public:
