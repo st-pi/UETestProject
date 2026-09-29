@@ -24,7 +24,8 @@ public class TopDownShooter : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] {
 			"TopDownShooter",
-			"TopDownShooter/UI"
+			"TopDownShooter/UI",
+			"TopDownShooter/Enemies"
 		});
 
 		// Uncomment if you are using Slate UI

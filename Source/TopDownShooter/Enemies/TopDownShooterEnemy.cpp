@@ -1,24 +1,23 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "TopDownShooterEnemy.h"
+#include "TopDownShooterAIController.h"
 #include "TopDownShooterHealthComponent.h"
 #include "TopDownShooterHealthWidget.h"
 #include "TopDownShooterGameState.h"
 #include "Components/WidgetComponent.h"
-#include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-#include "TimerManager.h"
 
 ATopDownShooterEnemy::ATopDownShooterEnemy()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = ATopDownShooterAIController::StaticClass();
 
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.f);
 
@@ -26,12 +25,11 @@ ATopDownShooterEnemy::ATopDownShooterEnemy()
 
 	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
 
-	DamageSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DamageSphere"));
+	Hurtbox = CreateDefaultSubobject<USphereComponent>(TEXT("Hurtbox"));
 
-	DamageSphere->SetupAttachment(RootComponent);
-	DamageSphere->SetSphereRadius(60.f);
-	DamageSphere->SetCollisionProfileName(TEXT("EnemyDamage"));
-	DamageSphere->OnComponentBeginOverlap.AddDynamic(this, &ATopDownShooterEnemy::HandleDamageOverlap);
+	Hurtbox->SetupAttachment(RootComponent);
+	Hurtbox->SetSphereRadius(50.f);
+	Hurtbox->SetCollisionProfileName(TEXT("EnemyHitbox"));
 
 	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
 
@@ -58,21 +56,10 @@ void ATopDownShooterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorldTimerManager().SetTimer(ChaseTimer, this, &ATopDownShooterEnemy::UpdateChase, ChaseUpdateRate, true);
-
-	UpdateChase();
-
 	if (UTopDownShooterHealthWidget* HealthWidget = Cast<UTopDownShooterHealthWidget>(HealthBarWidget->GetUserWidgetObject()))
 	{
 		HealthWidget->SetHealthComponent(HealthComponent);
 	}
-}
-
-void ATopDownShooterEnemy::EndPlay(EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	GetWorldTimerManager().ClearTimer(ChaseTimer);
 }
 
 float ATopDownShooterEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -94,26 +81,7 @@ float ATopDownShooterEnemy::TakeDamage(float Damage, FDamageEvent const& DamageE
 	return ActualDamage;
 }
 
-void ATopDownShooterEnemy::HandleDamageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+UBehaviorTree* ATopDownShooterEnemy::GetBehaviorTree() const
 {
-	UGameplayStatics::ApplyDamage(OtherActor, ContactDamage, GetController(), this, nullptr);
-
-	Destroy();
-}
-
-void ATopDownShooterEnemy::UpdateChase()
-{
-	AAIController* AIController = GetController<AAIController>();
-	if (!AIController)
-	{
-		return;
-	}
-
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
-	if (!PlayerPawn)
-	{
-		return;
-	}
-
-	AIController->MoveToActor(PlayerPawn, AcceptanceRadius);
+	return BehaviorTree;
 }
