@@ -13,7 +13,7 @@ class ATopDownShooterSpawner : public AActor
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Spawning")
-	TSubclassOf<ATopDownShooterEnemy> EnemyClass;
+	TArray<TSubclassOf<ATopDownShooterEnemy>> EnemyClasses;
 
 	UPROPERTY(EditInstanceOnly, Category = "Spawning")
 	TArray<AActor*> SpawnPoints;

@@ -28,7 +28,13 @@ void ATopDownShooterSpawner::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ATopDownShooterSpawner::SpawnEnemy()
 {
-	if (!EnemyClass || AliveEnemies >= MaxAliveEnemies)
+	if (EnemyClasses.IsEmpty() || AliveEnemies >= MaxAliveEnemies)
+	{
+		return;
+	}
+
+	const TSubclassOf<ATopDownShooterEnemy> EnemyClass = EnemyClasses[FMath::RandRange(0, EnemyClasses.Num() - 1)];
+	if (!EnemyClass)
 	{
 		return;
 	}

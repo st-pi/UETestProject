@@ -16,9 +16,6 @@ ATopDownShooterProjectile::ATopDownShooterProjectile()
 	RootComponent = CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
 
 	CollisionSphere->SetSphereRadius(12.0f);
-	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
-	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Block);
 	CollisionSphere->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
