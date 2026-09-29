@@ -71,6 +71,15 @@ void ATopDownShooterHUD::HandleGameOver()
 
 void ATopDownShooterHUD::HandleRestartRequested()
 {
+	if (APlayerController* PlayerController = GetOwningPlayerController())
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+
+		PlayerController->SetInputMode(InputMode);
+	}
+
 	if (ATopDownShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<ATopDownShooterGameMode>())
 	{
 		GameMode->RestartGame();
