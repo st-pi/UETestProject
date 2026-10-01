@@ -17,8 +17,10 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "TopDownShooterProjectile.h"
-#include "TopDownShooterHealthComponent.h"
 #include "TopDownShooterGameMode.h"
+#include "TopDownShooterPlayerState.h"
+#include "TopDownShooterHealthAttributeSet.h"
+#include "AbilitySystemComponent.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
 {
@@ -34,8 +36,6 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
-
-	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
 
 	Hurtbox = CreateDefaultSubobject<USphereComponent>(TEXT("Hurtbox"));
 	Hurtbox->SetupAttachment(RootComponent);
@@ -74,7 +74,66 @@ void ATopDownShooterCharacter::BeginPlay()
 void ATopDownShooterCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+
 	StopFire();
+
+	if (BoundHealthAttributeSet.IsValid())
+	{
+		BoundHealthAttributeSet->OnOutOfHealth.RemoveAll(this);
+		BoundHealthAttributeSet.Reset();
+	}
+}
+
+void ATopDownShooterCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitializeAbilitySystem();
+}
+
+UAbilitySystemComponent* ATopDownShooterCharacter::GetAbilitySystemComponent() const
+{
+	const ATopDownShooterPlayerState* TopDownPlayerState = GetPlayerState<ATopDownShooterPlayerState>();
+
+	return TopDownPlayerState ? TopDownPlayerState->GetAbilitySystemComponent() : nullptr;
+}
+
+void ATopDownShooterCharacter::InitializeAbilitySystem()
+{
+	ATopDownShooterPlayerState* TopDownPlayerState = GetPlayerState<ATopDownShooterPlayerState>();
+	if (!TopDownPlayerState)
+	{
+		return;
+	}
+
+	UAbilitySystemComponent* AbilitySystem = TopDownPlayerState->GetAbilitySystemComponent();
+	if (!AbilitySystem || BoundHealthAttributeSet.IsValid())
+	{
+		return;
+	}
+
+	AbilitySystem->InitAbilityActorInfo(TopDownPlayerState, this);
+
+	const UTopDownShooterHealthAttributeSet* HealthAttributeSet = AbilitySystem->GetSet<UTopDownShooterHealthAttributeSet>();
+	if (!HealthAttributeSet)
+	{
+		return;
+	}
+
+	AbilitySystem->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute(), DefaultMaxHealth);
+	AbilitySystem->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetHealthAttribute(), DefaultMaxHealth);
+
+	BoundHealthAttributeSet = HealthAttributeSet;
+
+	HealthAttributeSet->OnOutOfHealth.AddUObject(this, &ATopDownShooterCharacter::HandleOutOfHealth);
+}
+
+void ATopDownShooterCharacter::HandleOutOfHealth(AActor* DeadActor)
+{
+	if (ATopDownShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<ATopDownShooterGameMode>())
+	{
+		GameMode->EndGame();
+	}
 }
 
 void ATopDownShooterCharacter::Tick(float DeltaSeconds)
@@ -110,22 +169,6 @@ void ATopDownShooterCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATopDownShooterCharacter::StartFire);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ATopDownShooterCharacter::StopFire);
 	}
-}
-
-float ATopDownShooterCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-	HealthComponent->ApplyDamage(ActualDamage);
-
-	if (HealthComponent->IsDead())
-	{
-		if (ATopDownShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<ATopDownShooterGameMode>())
-		{
-			GameMode->EndGame();
-		}
-	}
-
-	return ActualDamage;
 }
 
 void ATopDownShooterCharacter::Move(const FInputActionValue& Value)

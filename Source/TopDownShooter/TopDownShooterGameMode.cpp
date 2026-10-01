@@ -5,6 +5,7 @@
 #include "TopDownShooterPlayerController.h"
 #include "TopDownShooterHUD.h"
 #include "TopDownShooterGameState.h"
+#include "TopDownShooterPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 ATopDownShooterGameMode::ATopDownShooterGameMode()
@@ -13,6 +14,7 @@ ATopDownShooterGameMode::ATopDownShooterGameMode()
 	PlayerControllerClass = ATopDownShooterPlayerController::StaticClass();
 	HUDClass = ATopDownShooterHUD::StaticClass();
 	GameStateClass = ATopDownShooterGameState::StaticClass();
+	PlayerStateClass = ATopDownShooterPlayerState::StaticClass();
 }
 
 void ATopDownShooterGameMode::EndGame()

@@ -6,7 +6,8 @@
 
 class UProgressBar;
 class UTextBlock;
-class UTopDownShooterHealthComponent;
+class UAbilitySystemComponent;
+struct FOnAttributeChangeData;
 
 UCLASS(abstract)
 class UTopDownShooterHealthWidget : public UUserWidget
@@ -26,10 +27,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	bool bBindToOwningPawn = false;
 
+	TWeakObjectPtr<UAbilitySystemComponent> BoundAbilitySystem;
+
 public:
 	virtual void NativeConstruct() override;
 
-	void SetHealthComponent(UTopDownShooterHealthComponent* HealthComponent);
+	virtual void NativeDestruct() override;
+
+	void SetAbilitySystemComponent(UAbilitySystemComponent* AbilitySystem);
 
 private:
 	UFUNCTION()
@@ -37,7 +42,8 @@ private:
 
 	void BindToPawn(APawn* Pawn);
 
-	UFUNCTION()
-	void HandleHealthChanged(float CurrentHealth, float MaxHealth);
+	void HandleAttributeChanged(const FOnAttributeChangeData& Data);
+
+	void RefreshBar();
 
 };

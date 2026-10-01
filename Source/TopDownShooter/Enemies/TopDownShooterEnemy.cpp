@@ -2,9 +2,10 @@
 
 #include "TopDownShooterEnemy.h"
 #include "TopDownShooterAIController.h"
-#include "TopDownShooterHealthComponent.h"
+#include "TopDownShooterHealthAttributeSet.h"
 #include "TopDownShooterHealthWidget.h"
 #include "TopDownShooterGameState.h"
+#include "AbilitySystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -23,7 +24,11 @@ ATopDownShooterEnemy::ATopDownShooterEnemy()
 
 	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
 
-	HealthComponent = CreateDefaultSubobject<UTopDownShooterHealthComponent>(TEXT("HealthComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	CreateDefaultSubobject<UTopDownShooterHealthAttributeSet>(TEXT("HealthAttributeSet"));
 
 	Hurtbox = CreateDefaultSubobject<USphereComponent>(TEXT("Hurtbox"));
 
@@ -56,29 +61,46 @@ void ATopDownShooterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	HealthAttributeSet = AbilitySystemComponent->GetSet<UTopDownShooterHealthAttributeSet>();
+
+	AbilitySystemComponent->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute(), DefaultMaxHealth);
+	AbilitySystemComponent->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetHealthAttribute(), DefaultMaxHealth);
+
+	HealthAttributeSet->OnOutOfHealth.AddUObject(this, &ATopDownShooterEnemy::HandleOutOfHealth);
+
 	if (UTopDownShooterHealthWidget* HealthWidget = Cast<UTopDownShooterHealthWidget>(HealthBarWidget->GetUserWidgetObject()))
 	{
-		HealthWidget->SetHealthComponent(HealthComponent);
+		HealthWidget->SetAbilitySystemComponent(AbilitySystemComponent);
 	}
 }
 
-float ATopDownShooterEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void ATopDownShooterEnemy::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
-	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	Super::EndPlay(EndPlayReason);
 
-	HealthComponent->ApplyDamage(ActualDamage);
+	HealthAttributeSet->OnOutOfHealth.RemoveAll(this);
+}
 
-	if (HealthComponent->IsDead())
+UAbilitySystemComponent* ATopDownShooterEnemy::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ATopDownShooterEnemy::HandleOutOfHealth(AActor* DeadActor)
+{
+	if (ATopDownShooterGameState* GameState = GetWorld()->GetGameState<ATopDownShooterGameState>())
 	{
-		if (ATopDownShooterGameState* GameState = GetWorld()->GetGameState<ATopDownShooterGameState>())
-		{
-			GameState->AddScore(ScoreValue);
-		}
-
-		Destroy();
+		GameState->AddScore(ScoreValue);
 	}
 
-	return ActualDamage;
+	SetActorEnableCollision(false);
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ATopDownShooterEnemy::FinishDeath);
+}
+
+void ATopDownShooterEnemy::FinishDeath()
+{
+	Destroy();
 }
 
 UBehaviorTree* ATopDownShooterEnemy::GetBehaviorTree() const

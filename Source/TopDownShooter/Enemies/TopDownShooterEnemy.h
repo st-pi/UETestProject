@@ -2,21 +2,26 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "TopDownShooterEnemy.generated.h"
 
 class USphereComponent;
 class UWidgetComponent;
 class UBehaviorTree;
-class UTopDownShooterHealthComponent;
+class UAbilitySystemComponent;
+class UTopDownShooterHealthAttributeSet;
 
 UCLASS(abstract)
-class ATopDownShooterEnemy : public ACharacter
+class ATopDownShooterEnemy : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UTopDownShooterHealthComponent* HealthComponent;
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<const UTopDownShooterHealthAttributeSet> HealthAttributeSet;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* Hurtbox;
@@ -30,13 +35,23 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Score", meta = (ClampMin = 0))
 	int32 ScoreValue = 10;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Health", meta = (ClampMin = 1))
+	float DefaultMaxHealth = 100.f;
+
 public:
 	ATopDownShooterEnemy();
 
 	virtual void BeginPlay() override;
 
-	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UBehaviorTree* GetBehaviorTree() const;
+
+private:
+	void HandleOutOfHealth(AActor* DeadActor);
+
+	void FinishDeath();
 
 };

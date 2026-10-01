@@ -1,5 +1,7 @@
 #include "TopDownShooterHealthWidget.h"
-#include "TopDownShooterHealthComponent.h"
+#include "TopDownShooterHealthAttributeSet.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/Pawn.h"
@@ -25,16 +27,41 @@ void UTopDownShooterHealthWidget::NativeConstruct()
 	BindToPawn(PlayerController->GetPawn());
 }
 
-void UTopDownShooterHealthWidget::SetHealthComponent(UTopDownShooterHealthComponent* HealthComponent)
+void UTopDownShooterHealthWidget::NativeDestruct()
 {
-	if (!HealthComponent)
+	if (BoundAbilitySystem.IsValid())
+	{
+		BoundAbilitySystem->GetGameplayAttributeValueChangeDelegate(UTopDownShooterHealthAttributeSet::GetHealthAttribute()).RemoveAll(this);
+		BoundAbilitySystem->GetGameplayAttributeValueChangeDelegate(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute()).RemoveAll(this);
+	}
+
+	BoundAbilitySystem.Reset();
+
+	Super::NativeDestruct();
+}
+
+void UTopDownShooterHealthWidget::SetAbilitySystemComponent(UAbilitySystemComponent* AbilitySystem)
+{
+	if (!AbilitySystem || BoundAbilitySystem == AbilitySystem)
 	{
 		return;
 	}
 
-	HealthComponent->OnHealthChanged.AddUniqueDynamic(this, &UTopDownShooterHealthWidget::HandleHealthChanged);
+	if (BoundAbilitySystem.IsValid())
+	{
+		BoundAbilitySystem->GetGameplayAttributeValueChangeDelegate(UTopDownShooterHealthAttributeSet::GetHealthAttribute()).RemoveAll(this);
+		BoundAbilitySystem->GetGameplayAttributeValueChangeDelegate(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute()).RemoveAll(this);
+	}
 
-	HandleHealthChanged(HealthComponent->GetCurrentHealth(), HealthComponent->GetMaxHealth());
+	BoundAbilitySystem = AbilitySystem;
+
+	AbilitySystem->GetGameplayAttributeValueChangeDelegate(UTopDownShooterHealthAttributeSet::GetHealthAttribute())
+		.AddUObject(this, &UTopDownShooterHealthWidget::HandleAttributeChanged);
+
+	AbilitySystem->GetGameplayAttributeValueChangeDelegate(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute())
+		.AddUObject(this, &UTopDownShooterHealthWidget::HandleAttributeChanged);
+
+	RefreshBar();
 }
 
 void UTopDownShooterHealthWidget::HandlePossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
@@ -49,11 +76,30 @@ void UTopDownShooterHealthWidget::BindToPawn(APawn* Pawn)
 		return;
 	}
 
-	SetHealthComponent(Pawn->FindComponentByClass<UTopDownShooterHealthComponent>());
+	SetAbilitySystemComponent(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Pawn));
 }
 
-void UTopDownShooterHealthWidget::HandleHealthChanged(float CurrentHealth, float MaxHealth)
+void UTopDownShooterHealthWidget::HandleAttributeChanged(const FOnAttributeChangeData& Data)
 {
+	RefreshBar();
+}
+
+void UTopDownShooterHealthWidget::RefreshBar()
+{
+	if (!BoundAbilitySystem.IsValid())
+	{
+		return;
+	}
+
+	const UTopDownShooterHealthAttributeSet* Attributes = BoundAbilitySystem->GetSet<UTopDownShooterHealthAttributeSet>();
+	if (!Attributes)
+	{
+		return;
+	}
+
+	const float CurrentHealth = Attributes->GetHealth();
+	const float MaxHealth = Attributes->GetMaxHealth();
+
 	HealthBar->SetPercent(MaxHealth > 0.f ? CurrentHealth / MaxHealth : 0.f);
 
 	if (HealthText)

@@ -7,6 +7,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
+class UGameplayEffect;
 
 UCLASS(abstract)
 class ATopDownShooterProjectile : public AActor
@@ -24,6 +25,9 @@ class ATopDownShooterProjectile : public AActor
 
 	UPROPERTY(EditAnywhere, Category = "Damage", meta = (ClampMin = 0))
 	float Damage = 25.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<UGameplayEffect> DamageEffect;
 
 	bool bHit = false;
 

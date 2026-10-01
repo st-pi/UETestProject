@@ -17,7 +17,10 @@ public class TopDownShooter : ModuleRules
 			"AIModule",
 			"NavigationSystem",
 			"UMG",
-			"Slate"
+			"Slate",
+			"GameplayAbilities",
+			"GameplayTags",
+			"GameplayTasks"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
@@ -25,7 +28,8 @@ public class TopDownShooter : ModuleRules
 		PublicIncludePaths.AddRange(new string[] {
 			"TopDownShooter",
 			"TopDownShooter/UI",
-			"TopDownShooter/Enemies"
+			"TopDownShooter/Enemies",
+			"TopDownShooter/Abilities"
 		});
 
 		// Uncomment if you are using Slate UI

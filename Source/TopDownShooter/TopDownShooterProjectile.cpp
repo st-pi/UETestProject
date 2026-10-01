@@ -5,10 +5,13 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "TopDownShooterAbilityStatics.h"
+#include "TopDownShooterDamageEffect.h"
 
 ATopDownShooterProjectile::ATopDownShooterProjectile()
 {
+	DamageEffect = UTopDownShooterDamageEffect::StaticClass();
+
  	PrimaryActorTick.bCanEverTick = false;
 
 	InitialLifeSpan = 2.0f;
@@ -50,7 +53,7 @@ void ATopDownShooterProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* O
 
 	bHit = true;
 
-	UGameplayStatics::ApplyDamage(Other, Damage, GetInstigatorController(), this, nullptr);
+	UTopDownShooterAbilityStatics::ApplyDamage(Other, GetInstigator(), DamageEffect, Damage);
 }
 
 void ATopDownShooterProjectile::OnProjectileStop(const FHitResult& ImpactResult)
