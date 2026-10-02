@@ -10,6 +10,7 @@ class UWidgetComponent;
 class UBehaviorTree;
 class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
+class UGameplayEffect;
 
 UCLASS(abstract)
 class ATopDownShooterEnemy : public ACharacter, public IAbilitySystemInterface
@@ -35,8 +36,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Score", meta = (ClampMin = 0))
 	int32 ScoreValue = 10;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Health", meta = (ClampMin = 1))
-	float DefaultMaxHealth = 100.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
 public:
 	ATopDownShooterEnemy();

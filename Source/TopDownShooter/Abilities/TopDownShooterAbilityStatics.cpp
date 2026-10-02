@@ -1,7 +1,12 @@
 #include "TopDownShooterAbilityStatics.h"
 #include "TopDownShooterGameplayTags.h"
+#include "TopDownShooterWeaponAttributeSet.h"
+#include "TopDownShooterProjectile.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "GameFramework/Pawn.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 void UTopDownShooterAbilityStatics::ApplyDamage(AActor* Target, AActor* Source, TSubclassOf<UGameplayEffect> DamageEffect, float Damage)
 {
@@ -31,4 +36,51 @@ void UTopDownShooterAbilityStatics::ApplyDamage(AActor* Target, AActor* Source, 
 	Spec.Data->SetSetByCallerMagnitude(TopDownShooterTags::Data_Damage.GetTag(), Damage);
 
 	EffectSource->ApplyGameplayEffectSpecToTarget(*Spec.Data, TargetAbilitySystem);
+}
+
+void UTopDownShooterAbilityStatics::ApplyEffectToSelf(UAbilitySystemComponent* AbilitySystem, TSubclassOf<UGameplayEffect> Effect, AActor* SourceObject)
+{
+	if (!AbilitySystem || !Effect)
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle Context = AbilitySystem->MakeEffectContext();
+	Context.AddSourceObject(SourceObject);
+
+	const FGameplayEffectSpecHandle Spec = AbilitySystem->MakeOutgoingSpec(Effect, 1.f, Context);
+	if (!Spec.IsValid())
+	{
+		return;
+	}
+
+	AbilitySystem->ApplyGameplayEffectSpecToSelf(*Spec.Data);
+}
+
+ATopDownShooterProjectile* UTopDownShooterAbilityStatics::SpawnProjectile(APawn* Shooter, TSubclassOf<ATopDownShooterProjectile> ProjectileClass, const FTransform& SpawnTransform)
+{
+	if (!Shooter || !ProjectileClass)
+	{
+		return nullptr;
+	}
+
+	ATopDownShooterProjectile* Projectile = Shooter->GetWorld()->SpawnActorDeferred<ATopDownShooterProjectile>(
+		ProjectileClass, SpawnTransform, Shooter, Shooter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+	if (!Projectile)
+	{
+		return nullptr;
+	}
+
+	const UAbilitySystemComponent* AbilitySystem = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Shooter);
+	const UTopDownShooterWeaponAttributeSet* WeaponAttributes = AbilitySystem ? AbilitySystem->GetSet<UTopDownShooterWeaponAttributeSet>() : nullptr;
+
+	if (WeaponAttributes)
+	{
+		Projectile->SetDamage(WeaponAttributes->GetDamage());
+	}
+
+	UGameplayStatics::FinishSpawningActor(Projectile, SpawnTransform);
+
+	return Projectile;
 }

@@ -7,6 +7,7 @@
 
 class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
+class UTopDownShooterWeaponAttributeSet;
 
 UCLASS()
 class ATopDownShooterPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -19,6 +20,9 @@ private:
 
 	UPROPERTY()
 	UTopDownShooterHealthAttributeSet* HealthAttributeSet;
+
+	UPROPERTY()
+	UTopDownShooterWeaponAttributeSet* WeaponAttributeSet;
 
 public:
 	ATopDownShooterPlayerState();

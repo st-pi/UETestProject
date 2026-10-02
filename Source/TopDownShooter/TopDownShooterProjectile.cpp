@@ -35,6 +35,11 @@ ATopDownShooterProjectile::ATopDownShooterProjectile()
 	ProjectileMovement->OnProjectileStop.AddDynamic(this, &ATopDownShooterProjectile::OnProjectileStop);
 }
 
+void ATopDownShooterProjectile::SetDamage(float NewDamage)
+{
+	Damage = NewDamage;
+}
+
 void ATopDownShooterProjectile::BeginPlay()
 {
 	Super::BeginPlay();

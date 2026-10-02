@@ -3,6 +3,7 @@
 #include "TopDownShooterEnemy.h"
 #include "TopDownShooterAIController.h"
 #include "TopDownShooterHealthAttributeSet.h"
+#include "TopDownShooterAbilityStatics.h"
 #include "TopDownShooterHealthWidget.h"
 #include "TopDownShooterGameState.h"
 #include "AbilitySystemComponent.h"
@@ -63,8 +64,7 @@ void ATopDownShooterEnemy::BeginPlay()
 
 	HealthAttributeSet = AbilitySystemComponent->GetSet<UTopDownShooterHealthAttributeSet>();
 
-	AbilitySystemComponent->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute(), DefaultMaxHealth);
-	AbilitySystemComponent->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetHealthAttribute(), DefaultMaxHealth);
+	UTopDownShooterAbilityStatics::ApplyEffectToSelf(AbilitySystemComponent, DefaultAttributes, this);
 
 	HealthAttributeSet->OnOutOfHealth.AddUObject(this, &ATopDownShooterEnemy::HandleOutOfHealth);
 

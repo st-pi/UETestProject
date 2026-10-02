@@ -1,5 +1,7 @@
 #include "TopDownShooterRangedEnemy.h"
 #include "TopDownShooterProjectile.h"
+#include "TopDownShooterWeaponAttributeSet.h"
+#include "TopDownShooterAbilityStatics.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -7,6 +9,8 @@
 
 ATopDownShooterRangedEnemy::ATopDownShooterRangedEnemy()
 {
+	CreateDefaultSubobject<UTopDownShooterWeaponAttributeSet>(TEXT("WeaponAttributeSet"));
+
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
 	WeaponMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
@@ -23,13 +27,7 @@ void ATopDownShooterRangedEnemy::Fire()
 		return;
 	}
 
-	const FRotator SpawnRotation = GetActorRotation();
-	const FVector SpawnLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
+	const FTransform SpawnTransform(GetActorRotation(), WeaponMesh->GetSocketLocation(MuzzleSocketName));
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	GetWorld()->SpawnActor<ATopDownShooterProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	UTopDownShooterAbilityStatics::SpawnProjectile(this, ProjectileClass, SpawnTransform);
 }

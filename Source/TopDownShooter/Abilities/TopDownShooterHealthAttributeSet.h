@@ -25,8 +25,6 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData IncomingDamage;
 
-	bool bOutOfHealthBroadcast = false;
-
 public:
 	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterHealthAttributeSet, Health)
 	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterHealthAttributeSet, MaxHealth)
@@ -35,6 +33,8 @@ public:
 	UTopDownShooterHealthAttributeSet();
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 

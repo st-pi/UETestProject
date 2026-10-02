@@ -23,6 +23,21 @@ void UTopDownShooterHealthAttributeSet::PreAttributeChange(const FGameplayAttrib
 	}
 }
 
+void UTopDownShooterHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute != GetMaxHealthAttribute() || FMath::IsNearlyEqual(OldValue, NewValue))
+	{
+		return;
+	}
+
+	if (UAbilitySystemComponent* AbilitySystem = GetOwningAbilitySystemComponent())
+	{
+		AbilitySystem->ApplyModToAttribute(GetHealthAttribute(), EGameplayModOp::Override, GetHealth() + NewValue - OldValue);
+	}
+}
+
 void UTopDownShooterHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -35,7 +50,7 @@ void UTopDownShooterHealthAttributeSet::PostGameplayEffectExecute(const FGamepla
 	const float DamageDone = GetIncomingDamage();
 	SetIncomingDamage(0.f);
 
-	if (DamageDone <= 0.f)
+	if (IsDead() || DamageDone <= 0.f)
 	{
 		return;
 	}
@@ -47,10 +62,8 @@ void UTopDownShooterHealthAttributeSet::PostGameplayEffectExecute(const FGamepla
 	UE_LOG(LogTopDownShooter, Log, TEXT("%s took %.1f damage, health %.1f/%.1f"),
 		*GetNameSafe(Target), DamageDone, GetHealth(), GetMaxHealth());
 
-	if (IsDead() && !bOutOfHealthBroadcast)
+	if (IsDead())
 	{
-		bOutOfHealthBroadcast = true;
-
 		OnOutOfHealth.Broadcast(Target);
 	}
 }

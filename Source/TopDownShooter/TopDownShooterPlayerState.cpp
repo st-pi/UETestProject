@@ -1,5 +1,6 @@
 #include "TopDownShooterPlayerState.h"
 #include "TopDownShooterHealthAttributeSet.h"
+#include "TopDownShooterWeaponAttributeSet.h"
 #include "AbilitySystemComponent.h"
 
 ATopDownShooterPlayerState::ATopDownShooterPlayerState()
@@ -9,6 +10,7 @@ ATopDownShooterPlayerState::ATopDownShooterPlayerState()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	HealthAttributeSet = CreateDefaultSubobject<UTopDownShooterHealthAttributeSet>(TEXT("HealthAttributeSet"));
+	WeaponAttributeSet = CreateDefaultSubobject<UTopDownShooterWeaponAttributeSet>(TEXT("WeaponAttributeSet"));
 
 	SetNetUpdateFrequency(100.f);
 }

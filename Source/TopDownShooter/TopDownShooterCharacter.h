@@ -14,6 +14,7 @@ class UAnimMontage;
 class ATopDownShooterProjectile;
 class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
+class UGameplayEffect;
 struct FInputActionValue;
 
 /**
@@ -58,8 +59,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon", meta = (ClampMin = 0.01, Units = "s"))
 	float FireRate = 0.15f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Health", meta = (ClampMin = 1))
-	float DefaultMaxHealth = 100.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
 	FTimerHandle FireTimer;
 

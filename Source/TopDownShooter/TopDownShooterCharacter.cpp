@@ -20,6 +20,7 @@
 #include "TopDownShooterGameMode.h"
 #include "TopDownShooterPlayerState.h"
 #include "TopDownShooterHealthAttributeSet.h"
+#include "TopDownShooterAbilityStatics.h"
 #include "AbilitySystemComponent.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
@@ -120,8 +121,7 @@ void ATopDownShooterCharacter::InitializeAbilitySystem()
 		return;
 	}
 
-	AbilitySystem->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetMaxHealthAttribute(), DefaultMaxHealth);
-	AbilitySystem->SetNumericAttributeBase(UTopDownShooterHealthAttributeSet::GetHealthAttribute(), DefaultMaxHealth);
+	UTopDownShooterAbilityStatics::ApplyEffectToSelf(AbilitySystem, DefaultAttributes, this);
 
 	BoundHealthAttributeSet = HealthAttributeSet;
 
@@ -197,15 +197,9 @@ void ATopDownShooterCharacter::Fire()
 		return;
 	}
 
-	const FRotator SpawnRotation = GetActorRotation();
-	const FVector SpawnLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
+	const FTransform SpawnTransform(GetActorRotation(), WeaponMesh->GetSocketLocation(MuzzleSocketName));
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	GetWorld()->SpawnActor<ATopDownShooterProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	UTopDownShooterAbilityStatics::SpawnProjectile(this, ProjectileClass, SpawnTransform);
 
 	if (!FireMontage)
 	{
