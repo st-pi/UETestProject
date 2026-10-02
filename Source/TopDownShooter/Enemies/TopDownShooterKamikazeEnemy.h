@@ -5,7 +5,6 @@
 #include "TopDownShooterKamikazeEnemy.generated.h"
 
 class USphereComponent;
-class UGameplayEffect;
 
 UCLASS()
 class ATopDownShooterKamikazeEnemy : public ATopDownShooterEnemy
@@ -15,12 +14,6 @@ class ATopDownShooterKamikazeEnemy : public ATopDownShooterEnemy
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* DamageSphere;
-
-	UPROPERTY(EditAnywhere, Category = "Damage", meta = (ClampMin = 0))
-	float ContactDamage = 25.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	TSubclassOf<UGameplayEffect> DamageEffect;
 
 public:
 	ATopDownShooterKamikazeEnemy();

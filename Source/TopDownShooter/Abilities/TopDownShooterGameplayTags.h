@@ -10,4 +10,5 @@ namespace TopDownShooterTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Fire);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Reload);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Explode);
 }
