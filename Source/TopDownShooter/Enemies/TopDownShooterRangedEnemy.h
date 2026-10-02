@@ -6,6 +6,7 @@
 #include "TopDownShooterRangedEnemy.generated.h"
 
 class UStaticMeshComponent;
+class UWidgetComponent;
 class ATopDownShooterProjectile;
 
 UCLASS()
@@ -17,6 +18,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* WeaponMesh;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UWidgetComponent* ReloadBarWidget;
+
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TSubclassOf<ATopDownShooterProjectile> ProjectileClass;
 
@@ -25,6 +29,8 @@ private:
 
 public:
 	ATopDownShooterRangedEnemy();
+
+	virtual void BeginPlay() override;
 
 	virtual void FireWeapon() override;
 

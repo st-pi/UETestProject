@@ -22,6 +22,8 @@
 #include "TopDownShooterHealthAttributeSet.h"
 #include "TopDownShooterAbilityStatics.h"
 #include "TopDownShooterWeaponAttributeSet.h"
+#include "TopDownShooterReloadWidget.h"
+#include "Components/WidgetComponent.h"
 #include "AbilitySystemComponent.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
@@ -48,6 +50,13 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 	WeaponMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
 	WeaponMesh->SetCollisionProfileName(TEXT("NoCollision"));
 
+	ReloadBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("ReloadBarWidget"));
+	ReloadBarWidget->SetupAttachment(RootComponent);
+	ReloadBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + 30.f));
+	ReloadBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	ReloadBarWidget->SetDrawSize(FVector2D(100.f, 10.f));
+	ReloadBarWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	// Create the camera boom component
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -71,6 +80,11 @@ ATopDownShooterCharacter::ATopDownShooterCharacter()
 void ATopDownShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UTopDownShooterReloadWidget* ReloadWidget = Cast<UTopDownShooterReloadWidget>(ReloadBarWidget->GetUserWidgetObject()))
+	{
+		ReloadWidget->SetAbilitySystemComponent(GetAbilitySystemComponent());
+	}
 }
 
 void ATopDownShooterCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -196,9 +210,13 @@ void ATopDownShooterCharacter::TryFire()
 		return;
 	}
 
-	AbilitySystem->TryActivateAbilityByClass(FireAbility);
+	if (AbilitySystem->TryActivateAbilityByClass(FireAbility))
+	{
+		return;
+	}
 
-	const UTopDownShooterWeaponAttributeSet* WeaponAttributes = AbilitySystem->GetSet<UTopDownShooterWeaponAttributeSet>();	
+	const UTopDownShooterWeaponAttributeSet* WeaponAttributes = AbilitySystem->GetSet<UTopDownShooterWeaponAttributeSet>();
+
 	if (WeaponAttributes && WeaponAttributes->IsMagazineEmpty())
 	{
 		TryReload();

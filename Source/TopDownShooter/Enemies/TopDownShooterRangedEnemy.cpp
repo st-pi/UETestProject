@@ -2,7 +2,10 @@
 #include "TopDownShooterProjectile.h"
 #include "TopDownShooterWeaponAttributeSet.h"
 #include "TopDownShooterAbilityStatics.h"
+#include "TopDownShooterReloadWidget.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
@@ -16,8 +19,26 @@ ATopDownShooterRangedEnemy::ATopDownShooterRangedEnemy()
 	WeaponMesh->SetupAttachment(GetMesh(), TEXT("HandGrip_R"));
 	WeaponMesh->SetCollisionProfileName(TEXT("NoCollision"));
 
+	ReloadBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("ReloadBarWidget"));
+
+	ReloadBarWidget->SetupAttachment(RootComponent);
+	ReloadBarWidget->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + 45.f));
+	ReloadBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	ReloadBarWidget->SetDrawSize(FVector2D(100.f, 10.f));
+	ReloadBarWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+}
+
+void ATopDownShooterRangedEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UTopDownShooterReloadWidget* ReloadWidget = Cast<UTopDownShooterReloadWidget>(ReloadBarWidget->GetUserWidgetObject()))
+	{
+		ReloadWidget->SetAbilitySystemComponent(GetAbilitySystemComponent());
+	}
 }
 
 void ATopDownShooterRangedEnemy::FireWeapon()

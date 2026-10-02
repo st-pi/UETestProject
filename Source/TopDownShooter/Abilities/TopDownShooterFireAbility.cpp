@@ -56,7 +56,7 @@ void UTopDownShooterFireAbility::ApplyCooldown(const FGameplayAbilitySpecHandle 
 		return;
 	}
 
-	Spec.Data->SetSetByCallerMagnitude(TopDownShooterTags::Data_Cooldown.GetTag(), WeaponAttributes->GetFireRate());
+	Spec.Data->SetSetByCallerMagnitude(TopDownShooterTags::Data_Duration.GetTag(), WeaponAttributes->GetFireRate());
 
 	ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, Spec);
 }

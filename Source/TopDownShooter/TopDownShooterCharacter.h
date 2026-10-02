@@ -11,6 +11,7 @@
 class UInputAction;
 class USphereComponent;
 class UStaticMeshComponent;
+class UWidgetComponent;
 class UAnimMontage;
 class ATopDownShooterProjectile;
 class UAbilitySystemComponent;
@@ -42,6 +43,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* WeaponMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UWidgetComponent* ReloadBarWidget;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;

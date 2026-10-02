@@ -1,8 +1,8 @@
-#include "TopDownShooterFireCooldownEffect.h"
+#include "TopDownShooterReloadingEffect.h"
 #include "TopDownShooterGameplayTags.h"
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 
-UTopDownShooterFireCooldownEffect::UTopDownShooterFireCooldownEffect()
+UTopDownShooterReloadingEffect::UTopDownShooterReloadingEffect()
 {
 	DurationPolicy = EGameplayEffectDurationType::HasDuration;
 
@@ -12,7 +12,7 @@ UTopDownShooterFireCooldownEffect::UTopDownShooterFireCooldownEffect()
 	DurationMagnitude = FGameplayEffectModifierMagnitude(DurationMagnitudeBySetByCaller);
 
 	FInheritedTagContainer GrantedTags;
-	GrantedTags.AddTag(TopDownShooterTags::Cooldown_Fire.GetTag());
+	GrantedTags.AddTag(TopDownShooterTags::State_Reloading.GetTag());
 
 	UTargetTagsGameplayEffectComponent* TargetTags = CreateDefaultSubobject<UTargetTagsGameplayEffectComponent>(TEXT("TargetTagsComponent"));
 	TargetTags->SetAndApplyTargetTagChanges(GrantedTags);
