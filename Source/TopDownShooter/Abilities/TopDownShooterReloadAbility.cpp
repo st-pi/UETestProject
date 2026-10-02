@@ -4,6 +4,8 @@
 #include "TopDownShooterGameplayTags.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEffectRemoved.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Animation/AnimMontage.h"
 
 UTopDownShooterReloadAbility::UTopDownShooterReloadAbility()
 {
@@ -46,7 +48,9 @@ void UTopDownShooterReloadAbility::ActivateAbility(const FGameplayAbilitySpecHan
 		return;
 	}
 
-	Spec.Data->SetSetByCallerMagnitude(TopDownShooterTags::Data_Duration.GetTag(), WeaponAttributes->GetReloadTime());
+	const float ReloadTime = WeaponAttributes->GetReloadTime();
+
+	Spec.Data->SetSetByCallerMagnitude(TopDownShooterTags::Data_Duration.GetTag(), ReloadTime);
 
 	ReloadingEffectHandle = ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, Spec);
 
@@ -55,6 +59,23 @@ void UTopDownShooterReloadAbility::ActivateAbility(const FGameplayAbilitySpecHan
 	WaitTask->OnRemoved.AddDynamic(this, &UTopDownShooterReloadAbility::HandleReloadingEffectRemoved);
 
 	WaitTask->ReadyForActivation();
+
+	PlayReloadMontage(ReloadTime);
+}
+
+void UTopDownShooterReloadAbility::PlayReloadMontage(float ReloadTime)
+{
+	if (!ReloadMontage)
+	{
+		return;
+	}
+
+	const float MontageLength = ReloadMontage->GetPlayLength();
+	const float PlayRate = (MontageLength > 0.f && ReloadTime > 0.f) ? MontageLength / ReloadTime : 1.f;
+
+	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ReloadMontage, PlayRate);
+
+	MontageTask->ReadyForActivation();
 }
 
 void UTopDownShooterReloadAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

@@ -4,6 +4,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "TopDownShooterReloadAbility.generated.h"
 
+class UAnimMontage;
 struct FGameplayEffectRemovalInfo;
 
 UCLASS()
@@ -14,6 +15,9 @@ class UTopDownShooterReloadAbility : public UGameplayAbility
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Reload")
 	TSubclassOf<UGameplayEffect> ReloadingEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Reload")
+	UAnimMontage* ReloadMontage;
 
 	FActiveGameplayEffectHandle ReloadingEffectHandle;
 
@@ -27,6 +31,8 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 private:
+	void PlayReloadMontage(float ReloadTime);
+
 	UFUNCTION()
 	void HandleReloadingEffectRemoved(const FGameplayEffectRemovalInfo& RemovalInfo);
 
