@@ -1,5 +1,5 @@
-#include "TopDownShooterKamikazeEnemy.h"
-#include "TopDownShooterGameplayTags.h"
+#include "Enemies/TopDownShooterKamikazeEnemy.h"
+#include "AbilitySystem/TopDownShooterGameplayTags.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 

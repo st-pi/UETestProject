@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TopDownShooterEnemy.h"
+#include "Enemies/TopDownShooterEnemy.h"
 #include "TopDownShooterKamikazeEnemy.generated.h"
 
 class USphereComponent;

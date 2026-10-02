@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TopDownShooterEnemy.h"
-#include "TopDownShooterWeaponUser.h"
+#include "Enemies/TopDownShooterEnemy.h"
+#include "Weapons/TopDownShooterWeaponUser.h"
 #include "TopDownShooterRangedEnemy.generated.h"
 
 class UStaticMeshComponent;

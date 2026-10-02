@@ -26,10 +26,7 @@ public class TopDownShooter : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
-			"TopDownShooter",
-			"TopDownShooter/UI",
-			"TopDownShooter/Enemies",
-			"TopDownShooter/Abilities"
+			"TopDownShooter"
 		});
 
 		// Uncomment if you are using Slate UI

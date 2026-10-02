@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "TopDownShooterEnemy.h"
-#include "TopDownShooterAIController.h"
-#include "TopDownShooterHealthAttributeSet.h"
-#include "TopDownShooterAbilityStatics.h"
-#include "TopDownShooterHealthWidget.h"
-#include "TopDownShooterGameState.h"
+#include "Enemies/TopDownShooterEnemy.h"
+#include "AI/TopDownShooterAIController.h"
+#include "AbilitySystem/Attributes/TopDownShooterHealthAttributeSet.h"
+#include "AbilitySystem/TopDownShooterAbilityStatics.h"
+#include "UI/Widgets/TopDownShooterHealthWidget.h"
+#include "GameModes/TopDownShooterGameState.h"
 #include "AbilitySystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
