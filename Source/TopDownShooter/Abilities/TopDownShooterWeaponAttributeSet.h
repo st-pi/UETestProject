@@ -23,11 +23,15 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	FGameplayAttributeData Damage;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	FGameplayAttributeData FireRate;
+
 public:
 	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterWeaponAttributeSet, Ammo)
 	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterWeaponAttributeSet, MaxAmmo)
 	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterWeaponAttributeSet, ReloadTime)
 	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterWeaponAttributeSet, Damage)
+	ATTRIBUTE_ACCESSORS_BASIC(UTopDownShooterWeaponAttributeSet, FireRate)
 
 	UTopDownShooterWeaponAttributeSet();
 

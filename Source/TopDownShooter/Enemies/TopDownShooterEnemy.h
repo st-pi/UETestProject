@@ -11,6 +11,7 @@ class UBehaviorTree;
 class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
 class UGameplayEffect;
+class UGameplayAbility;
 
 UCLASS(abstract)
 class ATopDownShooterEnemy : public ACharacter, public IAbilitySystemInterface
@@ -38,6 +39,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<UGameplayEffect> DefaultAttributes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 
 public:
 	ATopDownShooterEnemy();

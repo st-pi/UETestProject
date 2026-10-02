@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "TopDownShooterWeaponUser.h"
 #include "TopDownShooterCharacter.generated.h"
 
 class UInputAction;
@@ -15,13 +16,14 @@ class ATopDownShooterProjectile;
 class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
 class UGameplayEffect;
+class UGameplayAbility;
 struct FInputActionValue;
 
 /**
  *  A controllable top-down perspective character
  */
 UCLASS()
-class ATopDownShooterCharacter : public ACharacter, public IAbilitySystemInterface
+class ATopDownShooterCharacter : public ACharacter, public IAbilitySystemInterface, public ITopDownShooterWeaponUser
 {
 	GENERATED_BODY()
 
@@ -47,6 +49,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* ShootAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ReloadAction;
+
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	TSubclassOf<ATopDownShooterProjectile> ProjectileClass;
 
@@ -56,13 +61,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	UAnimMontage* FireMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon", meta = (ClampMin = 0.01, Units = "s"))
-	float FireRate = 0.15f;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
-	FTimerHandle FireTimer;
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<UGameplayAbility> FireAbility;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TSubclassOf<UGameplayAbility> ReloadAbility;
 
 	TWeakObjectPtr<const UTopDownShooterHealthAttributeSet> BoundHealthAttributeSet;
 
@@ -92,6 +98,8 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual void FireWeapon() override;
+
 private:
 
 	void InitializeAbilitySystem();
@@ -100,9 +108,8 @@ private:
 
 	void Move(const FInputActionValue& Value);
 
-	void StartFire();
-	void StopFire();
-	void Fire();
+	void TryFire();
+	void TryReload();
 
 };
 

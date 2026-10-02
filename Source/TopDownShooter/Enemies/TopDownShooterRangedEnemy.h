@@ -2,13 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "TopDownShooterEnemy.h"
+#include "TopDownShooterWeaponUser.h"
 #include "TopDownShooterRangedEnemy.generated.h"
 
 class UStaticMeshComponent;
 class ATopDownShooterProjectile;
 
 UCLASS()
-class ATopDownShooterRangedEnemy : public ATopDownShooterEnemy
+class ATopDownShooterRangedEnemy : public ATopDownShooterEnemy, public ITopDownShooterWeaponUser
 {
 	GENERATED_BODY()
 
@@ -25,6 +26,6 @@ private:
 public:
 	ATopDownShooterRangedEnemy();
 
-	void Fire();
+	virtual void FireWeapon() override;
 
 };

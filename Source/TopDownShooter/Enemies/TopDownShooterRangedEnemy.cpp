@@ -20,7 +20,7 @@ ATopDownShooterRangedEnemy::ATopDownShooterRangedEnemy()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
-void ATopDownShooterRangedEnemy::Fire()
+void ATopDownShooterRangedEnemy::FireWeapon()
 {
 	if (!ProjectileClass)
 	{

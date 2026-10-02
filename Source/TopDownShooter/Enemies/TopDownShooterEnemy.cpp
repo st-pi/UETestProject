@@ -66,6 +66,14 @@ void ATopDownShooterEnemy::BeginPlay()
 
 	UTopDownShooterAbilityStatics::ApplyEffectToSelf(AbilitySystemComponent, DefaultAttributes, this);
 
+	for (const TSubclassOf<UGameplayAbility>& Ability : DefaultAbilities)
+	{
+		if (Ability)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, INDEX_NONE, this));
+		}
+	}
+
 	HealthAttributeSet->OnOutOfHealth.AddUObject(this, &ATopDownShooterEnemy::HandleOutOfHealth);
 
 	if (UTopDownShooterHealthWidget* HealthWidget = Cast<UTopDownShooterHealthWidget>(HealthBarWidget->GetUserWidgetObject()))

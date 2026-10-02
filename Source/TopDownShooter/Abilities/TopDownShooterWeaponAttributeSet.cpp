@@ -5,6 +5,7 @@ UTopDownShooterWeaponAttributeSet::UTopDownShooterWeaponAttributeSet()
 	, MaxAmmo(12.f)
 	, ReloadTime(1.5f)
 	, Damage(25.f)
+	, FireRate(0.15f)
 {
 }
 
@@ -23,6 +24,10 @@ void UTopDownShooterWeaponAttributeSet::PreAttributeChange(const FGameplayAttrib
 	else if (Attribute == GetReloadTimeAttribute() || Attribute == GetDamageAttribute())
 	{
 		NewValue = FMath::Max(NewValue, 0.f);
+	}
+	else if (Attribute == GetFireRateAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.01f);
 	}
 }
 

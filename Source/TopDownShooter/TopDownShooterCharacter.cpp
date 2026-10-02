@@ -21,6 +21,7 @@
 #include "TopDownShooterPlayerState.h"
 #include "TopDownShooterHealthAttributeSet.h"
 #include "TopDownShooterAbilityStatics.h"
+#include "TopDownShooterWeaponAttributeSet.h"
 #include "AbilitySystemComponent.h"
 
 ATopDownShooterCharacter::ATopDownShooterCharacter()
@@ -76,8 +77,6 @@ void ATopDownShooterCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	StopFire();
-
 	if (BoundHealthAttributeSet.IsValid())
 	{
 		BoundHealthAttributeSet->OnOutOfHealth.RemoveAll(this);
@@ -123,6 +122,16 @@ void ATopDownShooterCharacter::InitializeAbilitySystem()
 
 	UTopDownShooterAbilityStatics::ApplyEffectToSelf(AbilitySystem, DefaultAttributes, this);
 
+	if (FireAbility)
+	{
+		AbilitySystem->GiveAbility(FGameplayAbilitySpec(FireAbility, 1, INDEX_NONE, this));
+	}
+
+	if (ReloadAbility)
+	{
+		AbilitySystem->GiveAbility(FGameplayAbilitySpec(ReloadAbility, 1, INDEX_NONE, this));
+	}
+
 	BoundHealthAttributeSet = HealthAttributeSet;
 
 	HealthAttributeSet->OnOutOfHealth.AddUObject(this, &ATopDownShooterCharacter::HandleOutOfHealth);
@@ -166,8 +175,8 @@ void ATopDownShooterCharacter::SetupPlayerInputComponent(UInputComponent* Player
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATopDownShooterCharacter::Move);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATopDownShooterCharacter::StartFire);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ATopDownShooterCharacter::StopFire);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATopDownShooterCharacter::TryFire);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ATopDownShooterCharacter::TryReload);
 	}
 }
 
@@ -179,18 +188,35 @@ void ATopDownShooterCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(FVector::RightVector, MoveInput.X);
 }
 
-void ATopDownShooterCharacter::StartFire()
+void ATopDownShooterCharacter::TryFire()
 {
-	Fire();
-	GetWorldTimerManager().SetTimer(FireTimer, this, &ATopDownShooterCharacter::Fire, FireRate, true);
+	UAbilitySystemComponent* AbilitySystem = GetAbilitySystemComponent();
+	if (!AbilitySystem || !FireAbility)
+	{
+		return;
+	}
+
+	AbilitySystem->TryActivateAbilityByClass(FireAbility);
+
+	const UTopDownShooterWeaponAttributeSet* WeaponAttributes = AbilitySystem->GetSet<UTopDownShooterWeaponAttributeSet>();	
+	if (WeaponAttributes && WeaponAttributes->IsMagazineEmpty())
+	{
+		TryReload();
+	}
 }
 
-void ATopDownShooterCharacter::StopFire()
+void ATopDownShooterCharacter::TryReload()
 {
-	GetWorldTimerManager().ClearTimer(FireTimer);
+	UAbilitySystemComponent* AbilitySystem = GetAbilitySystemComponent();
+	if (!AbilitySystem || !ReloadAbility)
+	{
+		return;
+	}
+
+	AbilitySystem->TryActivateAbilityByClass(ReloadAbility);
 }
 
-void ATopDownShooterCharacter::Fire()
+void ATopDownShooterCharacter::FireWeapon()
 {
 	if (!ProjectileClass)
 	{
