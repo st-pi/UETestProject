@@ -12,6 +12,7 @@ class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
+class UAnimMontage;
 
 UCLASS(abstract)
 class ATopDownShooterEnemy : public ACharacter, public IAbilitySystemInterface
@@ -43,6 +44,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TArray<UAnimMontage*> DeathMontages;
+
 public:
 	ATopDownShooterEnemy();
 
@@ -56,6 +60,8 @@ public:
 
 private:
 	void HandleOutOfHealth(AActor* DeadActor);
+
+	bool PlayDeathMontage();
 
 	void FinishDeath();
 
