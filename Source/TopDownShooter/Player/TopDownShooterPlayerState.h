@@ -8,6 +8,7 @@
 class UAbilitySystemComponent;
 class UTopDownShooterHealthAttributeSet;
 class UTopDownShooterWeaponAttributeSet;
+class UTopDownShooterProgressionAttributeSet;
 
 UCLASS()
 class ATopDownShooterPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -24,11 +25,12 @@ private:
 	UPROPERTY()
 	UTopDownShooterWeaponAttributeSet* WeaponAttributeSet;
 
+	UPROPERTY()
+	UTopDownShooterProgressionAttributeSet* ProgressionAttributeSet;
+
 public:
 	ATopDownShooterPlayerState();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	UTopDownShooterHealthAttributeSet* GetHealthAttributeSet() const;
 
 };

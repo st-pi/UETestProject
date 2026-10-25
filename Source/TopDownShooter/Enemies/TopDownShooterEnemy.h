@@ -47,6 +47,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Death")
 	TArray<UAnimMontage*> DeathMontages;
 
+	UPROPERTY(EditAnywhere, Category = "Progression", meta = (ClampMin = 0))
+	int32 ExperienceValue = 10;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Progression")
+	TSubclassOf<UGameplayEffect> ExperienceEffect;
+
 public:
 	ATopDownShooterEnemy();
 

@@ -17,6 +17,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 ATopDownShooterEnemy::ATopDownShooterEnemy()
 {
@@ -104,6 +105,8 @@ void ATopDownShooterEnemy::HandleOutOfHealth(AActor* DeadActor)
 	{
 		GameState->AddScore(ScoreValue);
 	}
+
+	UTopDownShooterAbilityStatics::ApplyExperience(UGameplayStatics::GetPlayerPawn(this, 0), this, ExperienceEffect, ExperienceValue);
 
 	SetActorEnableCollision(false);
 

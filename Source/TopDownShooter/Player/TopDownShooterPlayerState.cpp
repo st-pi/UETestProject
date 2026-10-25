@@ -1,6 +1,7 @@
 #include "Player/TopDownShooterPlayerState.h"
 #include "AbilitySystem/Attributes/TopDownShooterHealthAttributeSet.h"
 #include "AbilitySystem/Attributes/TopDownShooterWeaponAttributeSet.h"
+#include "AbilitySystem/Attributes/TopDownShooterProgressionAttributeSet.h"
 #include "AbilitySystemComponent.h"
 
 ATopDownShooterPlayerState::ATopDownShooterPlayerState()
@@ -11,6 +12,7 @@ ATopDownShooterPlayerState::ATopDownShooterPlayerState()
 
 	HealthAttributeSet = CreateDefaultSubobject<UTopDownShooterHealthAttributeSet>(TEXT("HealthAttributeSet"));
 	WeaponAttributeSet = CreateDefaultSubobject<UTopDownShooterWeaponAttributeSet>(TEXT("WeaponAttributeSet"));
+	ProgressionAttributeSet = CreateDefaultSubobject<UTopDownShooterProgressionAttributeSet>(TEXT("ProgressionAttributeSet"));
 
 	SetNetUpdateFrequency(100.f);
 }
@@ -18,9 +20,4 @@ ATopDownShooterPlayerState::ATopDownShooterPlayerState()
 UAbilitySystemComponent* ATopDownShooterPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
-}
-
-UTopDownShooterHealthAttributeSet* ATopDownShooterPlayerState::GetHealthAttributeSet() const
-{
-	return HealthAttributeSet;
 }

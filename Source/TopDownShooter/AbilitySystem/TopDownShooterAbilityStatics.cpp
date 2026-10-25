@@ -10,7 +10,27 @@
 
 void UTopDownShooterAbilityStatics::ApplyDamage(AActor* Target, AActor* Source, TSubclassOf<UGameplayEffect> DamageEffect, float Damage)
 {
-	if (!Target || !DamageEffect || Damage <= 0.f)
+	if (Damage <= 0.f)
+	{
+		return;
+	}
+
+	ApplyEffectWithMagnitude(Target, Source, DamageEffect, TopDownShooterTags::Data_Damage.GetTag(), Damage);
+}
+
+void UTopDownShooterAbilityStatics::ApplyExperience(AActor* Target, AActor* Source, TSubclassOf<UGameplayEffect> ExperienceEffect, float Experience)
+{
+	if (Experience <= 0.f)
+	{
+		return;
+	}
+
+	ApplyEffectWithMagnitude(Target, Source, ExperienceEffect, TopDownShooterTags::Data_Experience.GetTag(), Experience);
+}
+
+void UTopDownShooterAbilityStatics::ApplyEffectWithMagnitude(AActor* Target, AActor* Source, TSubclassOf<UGameplayEffect> Effect, FGameplayTag Tag, float Value)
+{
+	if (!Target || !Effect)
 	{
 		return;
 	}
@@ -27,13 +47,13 @@ void UTopDownShooterAbilityStatics::ApplyDamage(AActor* Target, AActor* Source, 
 	FGameplayEffectContextHandle Context = EffectSource->MakeEffectContext();
 	Context.AddSourceObject(Source);
 
-	const FGameplayEffectSpecHandle Spec = EffectSource->MakeOutgoingSpec(DamageEffect, 1.f, Context);
+	const FGameplayEffectSpecHandle Spec = EffectSource->MakeOutgoingSpec(Effect, 1.f, Context);
 	if (!Spec.IsValid())
 	{
 		return;
 	}
 
-	Spec.Data->SetSetByCallerMagnitude(TopDownShooterTags::Data_Damage.GetTag(), Damage);
+	Spec.Data->SetSetByCallerMagnitude(Tag, Value);
 
 	EffectSource->ApplyGameplayEffectSpecToTarget(*Spec.Data, TargetAbilitySystem);
 }
